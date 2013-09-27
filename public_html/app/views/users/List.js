@@ -1,6 +1,6 @@
 App.views.UsersList = Ext.extend(Ext.Panel, {
-    initComponent: function(){
-        var addButton, titlebar, list, syncButton;
+    initComponent: function() {
+        var addButton, titlebar, list, syncButton, clrdataButton;
 
         addButton = {
             itemId: 'addButton',
@@ -11,20 +11,30 @@ App.views.UsersList = Ext.extend(Ext.Panel, {
             scope: this
         };
 
-//syncButton = {
-//itemId: 'syncButton',
-//xtype: 'button',
-//text: 'Sync Data',
-//width: 400,
-//handler: this.onSyncAction,
-//scope: this
-//};
+        clrdataButton = {
+            itemId: 'clrdataButton',
+            iconCls: 'trash',
+            iconMask: true,
+            ui: 'plain',
+            handler: this.onClearDataAction,
+            scope: this
+        };
+
+
+        syncButton = {
+            itemId: 'syncButton',
+            iconCls: 'action',
+            iconMask: true,
+            ui: 'plain',
+            handler: this.onSyncAction,
+            scope: this
+        };
 
         titlebar = {
             dock: 'top',
             xtype: 'toolbar',
             title: 'Users',
-            items: [ { xtype: 'spacer' }, addButton ]
+            items: [addButton, {xtype: 'spacer'}, clrdataButton, syncButton]
         };
 
         list = {
@@ -43,19 +53,17 @@ App.views.UsersList = Ext.extend(Ext.Panel, {
             layout: 'fit',
             dockedItems: [titlebar],
             items: [list]
-            //items: [list,syncButton]
+                    //items: [list,syncButton]
         });
 
         App.views.UsersList.superclass.initComponent.call(this);
     },
-
     onAddAction: function() {
         Ext.dispatch({
             controller: 'Users',
             action: 'newForm'
         });
     },
-
     onItemtapAction: function(list, index, item, e) {
         Ext.dispatch({
             controller: 'Users',
@@ -63,13 +71,24 @@ App.views.UsersList = Ext.extend(Ext.Panel, {
             index: index
         });
     },
-            
-    onSyncAction: function(){
-        var offlineSyncStore = Ext.getStore('Users');
-        offlineSyncStore.syncServer();
-        Ext.Msg.alert('Data Sync Complete');
+    onSyncAction: function() {
+        Ext.dispatch({
+            controller: 'Users',
+            action: 'syncList'
+        });
+    },
+    onClearDataAction: function() {
+        Ext.Msg.confirm("Clear Data?", "", function(answer) {
+            if (answer === "yes") {
+                Ext.dispatch({
+                    controller: 'Users',
+                    action: 'clrData'
+                });
+
+            }
+        });
     }
-    
+
 });
 
 Ext.reg('App.views.UsersList', App.views.UsersList);

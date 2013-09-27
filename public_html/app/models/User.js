@@ -12,6 +12,12 @@ App.models.User = Ext.regModel('User', {
         }, {
             name: 'phone',
             type: 'string'
+        },{
+            name: 'uid',
+            type: 'string'
+        },{
+            name: 'dtype',
+            type: 'string'
         }
     ],
 

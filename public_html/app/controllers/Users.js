@@ -30,7 +30,7 @@ Ext.regController('Users', {
                 errors = tmpUser.validate();
 
         if (errors.isValid()) {
-            if (this.store.data.items[0].data.dtype != "NEW") {
+            if (this.store.data.items[0].data.dtype !== "NEW") {
                 params.record.set('dtype', 'EDIT');
             }
             params.record.set('name', tmpUser.data.name);
@@ -51,47 +51,53 @@ Ext.regController('Users', {
         this.index();
     },
     syncList: function(params) {
-        // Users
+        // NEW Users
         var syncData = [];
         this.store.data.each(function(record) {
             if (record.data.dtype === "NEW") {
                 syncData.push(record.data);
             }
         });
-        var tbldata = Ext.util.JSON.encode(syncData);
-        this.syncToServer({tblUsers: tbldata});
-        this.syncFromServer(this,params);                  
+        var tbldata_New = Ext.util.JSON.encode(syncData);
+        //this.syncToServer({tblUsers: tbldata, DataType: "NEW"});
+        
+        // EDIT Users
+        syncData = [];
+        this.store.data.each(function(record) {
+            if (record.data.dtype === "EDIT") {
+                syncData.push(record.data);
+            }
+        });
+        var tbldata_Edit = Ext.util.JSON.encode(syncData);
+        //this.syncToServer({tblUsers: tbldata, DataType: "EDIT"});
+        
+        this.syncToServer({tblUsers_New: tbldata_New, tblUsers_Edit: tbldata_Edit});
+        
         Ext.Msg.alert('Status', 'Sync successfully.');
     },
-    syncToServer: function(syncData) {
+    syncToServer: function(syncData,othis) {
+        var me = this;
         //Ext.util.JSONP.current = undefined;
         Ext.util.JSONP.current = null;
         Ext.util.JSONP.request({
             url: 'http://127.0.0.1:6101/QueueService/leebeautypromo.asmx/syncToServer',
             params: syncData,
-            callback: function(response1) {
-                 alert('done1');                 
+            scope: me,
+            callback: function(response) {
+                me.clrData();
+                for (var i = 0; i < response.length; i++) {
+                   me.store.add(response[i]);                    
+                }
+                me.store.save();
+                me.store.sync(); 
+              
             }
      });
-    },
-    syncFromServer: function(othis,params) {
-        //Ext.util.JSONP.current = undefined;
-        Ext.util.JSONP.current = null;
-        Ext.util.JSONP.request({
-            url: 'http://127.0.0.1:6101/QueueService/leebeautypromo.asmx/syncFromServer',
-            callback: function(response2) {
-                othis.clrData();
-                for (var i = 0; i < response2.length; i++) {
-                   othis.store.add(response2[i]);                    
-                }
-                othis.store.sync();
-                //this.clrData();
-            }
-        });
     },
     clrData: function() {
         var records = this.store.getRange();
         this.store.remove(records);
+        this.store.save();
         this.store.sync();
     }
 

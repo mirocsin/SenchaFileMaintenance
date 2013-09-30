@@ -2,7 +2,7 @@ App.models.User = Ext.regModel('User', {
     fields: [
         {
             name: 'id',
-            type: 'string'
+            type: 'int'
         }, {
             name: 'name',
             type: 'string'
@@ -30,7 +30,7 @@ App.models.User = Ext.regModel('User', {
         }
     ],
     proxy: {
-        type: 'localstorage',
+       type: 'localstorage',
        id: 'sencha-users'
     }
 });

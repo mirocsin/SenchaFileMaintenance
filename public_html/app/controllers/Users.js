@@ -30,7 +30,7 @@ Ext.regController('Users', {
                 errors = tmpUser.validate();
 
         if (errors.isValid()) {
-            if (this.store.data.items[0].data.dtype !== "NEW") {
+            if (tmpUser.data.dtype !== "NEW") {
                 params.record.set('dtype', 'EDIT');
             }
             params.record.set('name', tmpUser.data.name);
@@ -46,12 +46,23 @@ Ext.regController('Users', {
         }
     },
     remove: function(params) {
-        this.store.remove(params.record);
-        this.store.sync();
+        if (params.record.data.dtype !== "NEW") {
+            params.record.set('dtype', 'DELETE');
+            params.record.save();        
+        }
+        else if (params.record.data.dtype == "NEW"){
+            this.store.remove(params.record);
+            this.store.sync();    
+        }
+        //this.store.remove(params.record);
+        //this.store.sync();
+        this.store.load();
         this.index();
     },
     syncList: function(params) {
         // NEW Users
+        this.store.clearFilter();
+        
         var syncData = [];
         this.store.data.each(function(record) {
             if (record.data.dtype === "NEW") {
@@ -60,7 +71,7 @@ Ext.regController('Users', {
         });
         var tbldata_New = Ext.util.JSON.encode(syncData);
         //this.syncToServer({tblUsers: tbldata, DataType: "NEW"});
-        
+
         // EDIT Users
         syncData = [];
         this.store.data.each(function(record) {
@@ -69,36 +80,54 @@ Ext.regController('Users', {
             }
         });
         var tbldata_Edit = Ext.util.JSON.encode(syncData);
+        
+        // DELETE Users
+        syncData = [];
+        this.store.data.each(function(record) {
+            if (record.data.dtype === "DELETE") {
+                syncData.push(record.data);
+            }
+        });
+        var tbldata_Delete = Ext.util.JSON.encode(syncData);
+        
         //this.syncToServer({tblUsers: tbldata, DataType: "EDIT"});
-        
-        this.syncToServer({tblUsers_New: tbldata_New, tblUsers_Edit: tbldata_Edit});
-        
+
+        this.syncToServer({tblUsers_New: tbldata_New, tblUsers_Edit: tbldata_Edit,tblUsers_Delete: tbldata_Delete});
+
         Ext.Msg.alert('Status', 'Sync successfully.');
     },
-    syncToServer: function(syncData,othis) {
+    syncToServer: function(syncData, othis) {
         var me = this;
         //Ext.util.JSONP.current = undefined;
         Ext.util.JSONP.current = null;
         Ext.util.JSONP.request({
             url: 'http://127.0.0.1:6101/QueueService/leebeautypromo.asmx/syncToServer',
+            //url: 'http://leebeauty.blogdns.net:8080/pppque/leebeautypromo.asmx/syncToServer',
             params: syncData,
             scope: me,
             callback: function(response) {
                 me.clrData();
                 for (var i = 0; i < response.length; i++) {
-                   me.store.add(response[i]);                    
+                    me.store.add(response[i]);
                 }
                 me.store.save();
-                me.store.sync(); 
-              
+                me.store.sync();
+
             }
-     });
+        });
     },
     clrData: function() {
-        var records = this.store.getRange();
-        this.store.remove(records);
-        this.store.save();
+        //var records = this.store.getRange();
+        //this.store.remove(records);
+        //this.store.save();
+        //this.store.sync();
+
+        //this.store.removeAll();
+        this.store.data.clear();
+        window.localStorage.clear();
         this.store.sync();
-    }
+    },
+            
+         
 
 });

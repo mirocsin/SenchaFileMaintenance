@@ -81,6 +81,10 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
                     xtype: 'App.views.ErrorField',
                     fieldname: 'phone',
                 },
+                {
+                    name: 'dtype',
+                    xtype: 'hiddenfield'
+                }
             ]
         };
 
@@ -170,6 +174,9 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
     },
 
     resetField: function(field) {
+        if (field.name=="dtype"){
+            return "";
+        }
         var errorField = this.down('#'+field.name+'ErrorField');
         errorField.hide();
         field.removeCls('invalid-field');

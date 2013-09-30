@@ -20,7 +20,6 @@ App.views.UsersList = Ext.extend(Ext.Panel, {
             scope: this
         };
 
-
         syncButton = {
             itemId: 'syncButton',
             iconCls: 'action',
@@ -43,10 +42,9 @@ App.views.UsersList = Ext.extend(Ext.Panel, {
             store: App.stores.users,
             listeners: {
                 scope: this,
-                itemtap: this.onItemtapAction
+                itemtap: this.onItemtapAction            
             }
         };
-
 
         Ext.apply(this, {
             html: 'placeholder',
@@ -55,6 +53,7 @@ App.views.UsersList = Ext.extend(Ext.Panel, {
             items: [list]
                     //items: [list,syncButton]
         });
+
 
         App.views.UsersList.superclass.initComponent.call(this);
     },
@@ -87,8 +86,7 @@ App.views.UsersList = Ext.extend(Ext.Panel, {
 
             }
         });
-    }
-
+    },
 });
 
 Ext.reg('App.views.UsersList', App.views.UsersList);

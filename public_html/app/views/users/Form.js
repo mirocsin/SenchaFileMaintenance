@@ -1,8 +1,7 @@
 App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
     defaultInstructions: 'Please enter the information above.',
-
-    initComponent: function(){
-        var titlebar, cancelButton, buttonbar, saveButton, deleteButton, fields;
+    initComponent: function() {
+        var titlebar, cancelButton, buttonbar, saveButton, deleteButton, fields, field_details, add_detailButton;
 
         cancelButton = {
             text: 'cancel',
@@ -15,7 +14,7 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
             id: 'userFormTitlebar',
             xtype: 'toolbar',
             title: 'Create user',
-            items: [ cancelButton ]
+            items: [cancelButton]
         };
 
         saveButton = {
@@ -51,13 +50,22 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
                 labelWidth: '40%',
                 required: false,
                 useClearIcon: true,
-                autoCapitalize : false
+                autoCapitalize: false
             },
             items: [
                 {
-                    name : 'name',
+                    name: 'code',
+                    label: 'code',
+                    autoCapitalize: true
+                },
+                {
+                    xtype: 'App.views.ErrorField',
+                    fieldname: 'code',
+                },
+                {
+                    name: 'name',
                     label: 'name',
-                    autoCapitalize : true
+                    autoCapitalize: true
                 },
                 {
                     xtype: 'App.views.ErrorField',
@@ -88,16 +96,30 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
             ]
         };
 
+        add_detailButton = {
+            xtype: 'button',
+            ui: 'normal',
+            text: 'Add Details',
+            handler: this.onAddDetail,
+            scope: this
+        };
+
+        field_details = {
+            xtype: 'list',
+            itemTpl: '{customer} &nbsp;&nbsp;{email}',
+            store: App.stores.users_details
+        };
+
         Ext.apply(this, {
             scroll: 'vertical',
-            dockedItems: [ titlebar, buttonbar ],
-            items: [ fields ],
+            dockedItems: [titlebar, buttonbar],
+            items: [fields,add_detailButton,field_details],
             listeners: {
                 beforeactivate: function() {
                     var deleteButton = this.down('#userFormDeleteButton'),
-                        saveButton = this.down('#userFormSaveButton'),
-                        titlebar = this.down('#userFormTitlebar'),
-                        model = this.getRecord();
+                            saveButton = this.down('#userFormSaveButton'),
+                            titlebar = this.down('#userFormTitlebar'),
+                            model = this.getRecord();
 
                     if (model.phantom) {
                         titlebar.setTitle('Create user');
@@ -109,51 +131,49 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
                         deleteButton.show();
                     }
                 },
-                deactivate: function() { this.resetForm() }
+                deactivate: function() {
+                    this.resetForm()
+                }
             }
         });
 
         App.views.UsersForm.superclass.initComponent.call(this);
     },
-
     onCancelAction: function() {
         Ext.dispatch({
             controller: 'Users',
             action: 'index'
         });
     },
-
     onSaveAction: function() {
         var model = this.getRecord();
 
         Ext.dispatch({
             controller: 'Users',
-            action    : (model.phantom ? 'save' : 'update'),
-            data      : this.getValues(),
-            record    : model,
-            form      : this
+            action: (model.phantom ? 'save' : 'update'),
+            data: this.getValues(),
+            record: model,
+            form: this
         });
     },
-
     onDeleteAction: function() {
         Ext.Msg.confirm("Delete this user?", "", function(answer) {
             if (answer === "yes") {
                 Ext.dispatch({
                     controller: 'Users',
-                    action    : 'remove',
-                    record    : this.getRecord()
+                    action: 'remove',
+                    record: this.getRecord()
                 });
             }
         }, this);
     },
-
     showErrors: function(errors) {
         var fieldset = this.down('#userFormFieldset');
         this.fields.each(function(field) {
             var fieldErrors = errors.getByField(field.name);
 
             if (fieldErrors.length > 0) {
-                var errorField = this.down('#'+field.name+'ErrorField');
+                var errorField = this.down('#' + field.name + 'ErrorField');
                 field.addCls('invalid-field');
                 errorField.update(fieldErrors);
                 errorField.show();
@@ -163,7 +183,6 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
         }, this);
         fieldset.setInstructions("Please amend the flagged fields");
     },
-
     resetForm: function() {
         var fieldset = this.down('#userFormFieldset');
         this.fields.each(function(field) {
@@ -172,15 +191,26 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
         fieldset.setInstructions(this.defaultInstructions);
         this.reset();
     },
-
     resetField: function(field) {
-        if (field.name=="dtype"){
+        if (field.name == "dtype") {
             return "";
         }
-        var errorField = this.down('#'+field.name+'ErrorField');
+        var errorField = this.down('#' + field.name + 'ErrorField');
         errorField.hide();
         field.removeCls('invalid-field');
         return errorField;
+    },
+    onAddDetail: function() {
+        App.views.viewport.reveal('userDetails');
+        
+        //App.stores.users_details.add({customer:'New Row...'});
+        //App.stores.users_details.sync();
+//        Ext.dispatch({
+//            controller: 'Users',
+//            action: save_userdetail,
+//            form: this
+//        });
+        
     }
 });
 

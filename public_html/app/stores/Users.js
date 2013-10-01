@@ -4,10 +4,9 @@ App.stores.users = new Ext.data.Store({
     listeners: {
         'load': function(store, records, options) {
             store.filter(function(r) {
-                var value = r.get('id');
+                var value = r.get('dtype');
                 return (value === 'NEW' || value === 'EDIT' || value === '');
             });
         }
-    },
-            
+    }  
 });

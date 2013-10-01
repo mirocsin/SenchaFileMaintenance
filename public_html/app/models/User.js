@@ -2,8 +2,11 @@ App.models.User = Ext.regModel('User', {
     fields: [
         {
             name: 'id',
-            type: 'int'
+            type: 'string'            
         }, {
+            name: 'code',
+            type: 'string'
+        },{
             name: 'name',
             type: 'string'
         }, {
@@ -17,8 +20,11 @@ App.models.User = Ext.regModel('User', {
             type: 'string'
         }
     ],
-   
     validations: [
+        {
+            type: 'presence',
+            name: 'code'
+        },
         {
             type: 'presence',
             name: 'name'
@@ -30,7 +36,8 @@ App.models.User = Ext.regModel('User', {
         }
     ],
     proxy: {
-       type: 'localstorage',
-       id: 'sencha-users'
-    }
+        type: 'localstorage',
+        id: 'sencha-users'
+    },
+    //hasMany: {model: 'User_details', name: 'user_details'}
 });

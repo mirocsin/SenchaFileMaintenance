@@ -201,8 +201,14 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
         return errorField;
     },
     onAddDetail: function() {
-        App.views.viewport.reveal('userDetails');
-        
+        var model = this.getRecord();
+        Ext.dispatch({
+            controller: 'Users',
+            action: 'onAddDetail',
+            data: this.getValues(),
+            record: model,
+            form: this
+        });
         //App.stores.users_details.add({customer:'New Row...'});
         //App.stores.users_details.sync();
 //        Ext.dispatch({

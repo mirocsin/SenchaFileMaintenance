@@ -125,7 +125,9 @@ Ext.regController('Users', {
         window.localStorage.clear();
         this.store.sync();
     },
-    save_userdetail: function() {
-       // App.views.viewport.reveal('usersDetails');
-    },
+   onAddDetail: function(){
+        var model = new App.models.User_details();
+        App.views.userDetails.load(model);
+        App.views.viewport.reveal('userDetails');
+   }
 });

@@ -10,7 +10,7 @@ App.views.UsersDetails = Ext.extend(Ext.form.FormPanel, {
         };
 
         saveButton = {
-            id: 'userFormSaveButton',
+            id: 'userDetailSaveButton',
             text: 'save',
             ui: 'confirm',
             handler: this.onSaveAction,
@@ -18,7 +18,7 @@ App.views.UsersDetails = Ext.extend(Ext.form.FormPanel, {
         };
 
         deleteButton = {
-            id: 'userFormDeleteButton',
+            id: 'userDetailDeleteButton',
             text: 'delete',
             ui: 'decline',
             handler: this.onDeleteAction,
@@ -26,7 +26,7 @@ App.views.UsersDetails = Ext.extend(Ext.form.FormPanel, {
         };
         
         titlebar = {
-            id: 'userFormTitlebar',
+            id: 'userDetailTitlebar',
             xtype: 'toolbar',
             title: 'Enter User Details',
             items: [cancelButton]
@@ -35,7 +35,7 @@ App.views.UsersDetails = Ext.extend(Ext.form.FormPanel, {
         buttonbar = {
             xtype: 'toolbar',
             dock: 'bottom',
-            items: [deleteButton, {xtype: 'spacer'}, saveButton]
+            items: [{xtype: 'spacer'}, saveButton]
         };
         
         fields = {
@@ -67,7 +67,7 @@ App.views.UsersDetails = Ext.extend(Ext.form.FormPanel, {
             ]
 
         };
-
+         
         Ext.apply(this, {
             scroll: 'vertical',
             dockedItems: [titlebar, buttonbar],
@@ -83,8 +83,18 @@ App.views.UsersDetails = Ext.extend(Ext.form.FormPanel, {
             action: 'cancel',
             form: this
         });
-
-    }
+    },
+    
+    onSaveAction: function() {
+        var model = this.getRecord();
+        Ext.dispatch({
+            controller: 'Users_details',
+            action: 'save',
+            form: this,
+            record: model,
+            data: this.getValues()
+        });
+    }        
 
 
 })

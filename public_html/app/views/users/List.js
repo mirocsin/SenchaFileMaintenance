@@ -37,6 +37,7 @@ App.views.UsersList = Ext.extend(Ext.Panel, {
         };
 
         list = {
+            itemId: 'userList',
             xtype: 'list',
             itemTpl: '{name}',
             store: App.stores.users,

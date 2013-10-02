@@ -105,15 +105,53 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
         };
 
         field_details = {
+            id: 'userdetail_List',
             xtype: 'list',
-            itemTpl: '{customer} &nbsp;&nbsp;{email}',
-            store: App.stores.users_details
+            itemTpl: '<button class="del_detailBtn">delete</button> &nbsp;&nbsp; <button class="edit_detailBtn">edit</button>  &nbsp;&nbsp; {customer} &nbsp;&nbsp;{email}',
+            store: App.stores.users_details,
+            listeners: {
+                itemtap: function(list, index, item, e) {
+                    if (e.getTarget('.del_detailBtn')) {
+
+                        Ext.Msg.show({
+                            title: 'Confirm',
+                            msg: 'Delete this?',
+                            buttons: Ext.MessageBox.YESNO,
+                            config: {
+                                list: list,
+                                index: index,
+                                item: item
+                            },
+                            fn: function(btn, text, opt){
+                                if (btn === "yes"){
+                                     Ext.dispatch({
+                                        controller: 'Users_details',
+                                        action: 'remove',
+                                        list: list,
+                                        index: index,
+                                        //index: opt.config.list.getSelectedRecords()[0].data.id,                                        
+                                        btn: btn
+                                    });                                    
+                                }
+                            },
+                            icon: Ext.MessageBox.QUESTION
+                        });
+
+                    }
+                    else if (e.getTarget('.edit_detailBtn')) {
+                        alert('edit');
+                    }
+                },
+          
+            }        
         };
 
+         
+               
         Ext.apply(this, {
             scroll: 'vertical',
             dockedItems: [titlebar, buttonbar],
-            items: [fields,add_detailButton,field_details],
+            items: [fields, add_detailButton, field_details],
             listeners: {
                 beforeactivate: function() {
                     var deleteButton = this.down('#userFormDeleteButton'),
@@ -121,6 +159,14 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
                             titlebar = this.down('#userFormTitlebar'),
                             model = this.getRecord();
 
+                    //------------ Filter the List        
+                   Ext.dispatch({
+                        controller: 'Users_details',
+                        action: 'filter',
+                        form: this            
+                    });
+                    //------------ End of Filter
+            
                     if (model.phantom) {
                         titlebar.setTitle('Create user');
                         saveButton.setText('create');
@@ -132,13 +178,14 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
                     }
                 },
                 deactivate: function() {
-                    this.resetForm()
+                    //this.resetForm()
                 }
             }
         });
 
         App.views.UsersForm.superclass.initComponent.call(this);
     },
+    
     onCancelAction: function() {
         Ext.dispatch({
             controller: 'Users',
@@ -216,7 +263,7 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
 //            action: save_userdetail,
 //            form: this
 //        });
-        
+
     }
 });
 

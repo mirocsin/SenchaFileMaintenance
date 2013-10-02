@@ -3,7 +3,10 @@ App.models.User_details = Ext.regModel('User_details', {
         {
             name: 'id',
             type: 'int'
-        }, {
+        },{
+            name: 'ucode',
+            type: 'string'
+        },{
             name: 'customer',
             type: 'string'
         }, {

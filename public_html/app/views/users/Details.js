@@ -63,6 +63,14 @@ App.views.UsersDetails = Ext.extend(Ext.form.FormPanel, {
                 {
                     name: 'phone',
                     label: 'phone',
+                },
+                {
+                    name: 'ucode',
+                    xtype: 'hiddenfield'
+                },
+                {
+                    name: 'dtype',
+                    xtype: 'hiddenfield'
                 }
             ]
 
@@ -71,7 +79,18 @@ App.views.UsersDetails = Ext.extend(Ext.form.FormPanel, {
         Ext.apply(this, {
             scroll: 'vertical',
             dockedItems: [titlebar, buttonbar],
-            items: [fields]
+            items: [fields],
+            listeners: {
+                beforeactivate: function() {
+                    var saveButton = this.down('#userDetailSaveButton'),
+                        model = this.getRecord();
+                    if (model.phantom) {
+                        saveButton.setText('create');                        
+                    } else {
+                        saveButton.setText('update');                        
+                    }
+                }
+            }
         });
 
         App.views.UsersDetails.superclass.initComponent.call(this);
@@ -89,7 +108,7 @@ App.views.UsersDetails = Ext.extend(Ext.form.FormPanel, {
         var model = this.getRecord();
         Ext.dispatch({
             controller: 'Users_details',
-            action: 'save',
+            action: (model.phantom ? 'save' : 'update'),
             form: this,
             record: model,
             data: this.getValues()

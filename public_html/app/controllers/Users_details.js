@@ -12,7 +12,16 @@
         this.store.create(params.data);
         this.showUserForm();
     },
-            
+    update: function(params){
+        var tmpData = new App.models.User_details(params.data)
+        if (tmpData.data.dtype !== "NEW") {
+            tmpData.set('dtype', 'EDIT');
+        }
+        tmpData.data.id = params.record.data.id;
+        params.record.set(tmpData.data)
+        this.store.sync();
+        this.showUserForm();
+    },        
     cancel: function(){
         this.showUserForm();
     },
@@ -27,7 +36,11 @@
         //App.stores.users_details.load();
         //App.views.usersForm.getComponent('userdetail_List').refresh();
     },
-    
+    editDetails: function(params) {
+        var model = this.store.getAt(params.index);
+        App.views.userDetails.load(model);
+        App.views.viewport.reveal('userDetails');
+    },
     filter: function(){
         App.stores.users_details.clearFilter();
         var filter_ucode = App.views.usersForm.record.data.code; //params.form.record.data.code;

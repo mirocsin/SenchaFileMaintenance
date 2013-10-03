@@ -107,6 +107,7 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
         field_details = {
             id: 'userdetail_List',
             xtype: 'list',
+            layout: 'fit',
             itemTpl: '<table width="100%"><tr><td valign="top" width="10%"><button class="x-button related-btn" name="del_detailBtn">delete</button></td><td valign="top" width="40%">{customer}</td><td valign="top" width="20%">{email}</td></tr></table>',
             store: App.stores.users_details,
             listeners: {

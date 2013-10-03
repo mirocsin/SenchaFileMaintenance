@@ -53,7 +53,8 @@
             return ((dtype === 'NEW' || dtype === 'EDIT' || dtype === '') && ucode === filter_ucode);
         });
         App.stores.users_details.load();
-        App.views.usersForm.getComponent('userdetail_List').refresh();
+        //App.views.usersForm.getComponent('userdetail_List').refresh();
+        App.views.usersForm.getComponent('container_details').getComponent('userdetail_List').refresh();
     }
     
 });

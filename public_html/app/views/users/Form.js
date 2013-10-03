@@ -104,53 +104,59 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
             scope: this
         };
 
-        field_details = {
-            id: 'userdetail_List',
-            xtype: 'list',
-            layout: 'fit',
-            itemTpl: '<table width="100%"><tr><td valign="top" width="10%"><button class="x-button related-btn" name="del_detailBtn">delete</button></td><td valign="top" width="40%">{customer}</td><td valign="top" width="20%">{email}</td></tr></table>',
-            store: App.stores.users_details,
-            listeners: {
-                itemtap: function(list, index, item, e) {
-                    if (e.target.name === "del_detailBtn" ) {
-                        Ext.Msg.show({
-                            title: 'Confirm',
-                            msg: 'Delete this?',
-                            buttons: Ext.MessageBox.YESNO,
-                            config: {
-                                list: list,
-                                index: index,
-                                item: item
-                            },
-                            fn: function(btn, text, opt){
-                                if (btn === "yes"){
-                                     Ext.dispatch({
-                                        controller: 'Users_details',
-                                        action: 'remove',
+        field_details = 
+            {
+            id: 'container_details',
+            xtype: 'container',
+            layout: 'card',
+            styleHtmlContent: true,
+            title: 'Albums',
+            height: '300px',
+            items: [
+                {
+                    id: 'userdetail_List',
+                    xtype: 'list',
+                    itemTpl: '<table width="100%"><tr><td valign="top" width="10%"><button class="x-button related-btn" name="del_detailBtn">delete</button></td><td valign="top" width="40%">{customer}</td><td valign="top" width="20%">{email}</td></tr></table>',
+                    store: App.stores.users_details,
+                    listeners: {
+                        itemtap: function(list, index, item, e) {
+                            if (e.target.name === "del_detailBtn") {
+                                Ext.Msg.show({
+                                    title: 'Confirm',
+                                    msg: 'Delete this?',
+                                    buttons: Ext.MessageBox.YESNO,
+                                    config: {
                                         list: list,
-                                        index: index
-                                    });                                    
-                                }
-                            },
-                            icon: Ext.MessageBox.QUESTION
-                        });
-                    }
-                    else {
-                        Ext.dispatch({
-                            controller: 'Users_details',
-                            action: 'editDetails',
-                            list: list,
-                            index: index
-                        });
-                    }
-                  
-                },
-          
-            }        
-        };
+                                        index: index,
+                                        item: item
+                                    },
+                                    fn: function(btn, text, opt) {
+                                        if (btn === "yes") {
+                                            Ext.dispatch({
+                                                controller: 'Users_details',
+                                                action: 'remove',
+                                                list: list,
+                                                index: index
+                                            });
+                                        }
+                                    },
+                                    icon: Ext.MessageBox.QUESTION
+                                });
+                            }
+                            else {
+                                Ext.dispatch({
+                                    controller: 'Users_details',
+                                    action: 'editDetails',
+                                    list: list,
+                                    index: index
+                                });
+                            }
 
-         
-               
+                        }
+                    }
+                }]
+            },
+            
         Ext.apply(this, {
             scroll: 'vertical',
             dockedItems: [titlebar, buttonbar],
@@ -171,12 +177,12 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
                         saveButton.setText('update');
                         deleteButton.show();
                     }
-                    
-                   //------------ Filter the List        
-                   Ext.dispatch({
+
+                    //------------ Filter the List        
+                    Ext.dispatch({
                         controller: 'Users_details',
                         action: 'filter',
-                        form: this            
+                        form: this
                     });
                     //------------ End of Filter
                 },
@@ -188,7 +194,6 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
 
         App.views.UsersForm.superclass.initComponent.call(this);
     },
-    
     onCancelAction: function() {
         Ext.dispatch({
             controller: 'Users',
@@ -258,7 +263,7 @@ App.views.UsersForm = Ext.extend(Ext.form.FormPanel, {
             data: this.getValues(),
             record: model,
             form: this
-        });   
+        });
 
     }
 });
